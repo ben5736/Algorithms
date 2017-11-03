@@ -8,22 +8,28 @@ class TrieNode(object):
 
 class Trie(object):
 
-  def __init__(self):
+  def __init__(self, is_suffix=False):
     self._root = TrieNode()
+    self._is_suffix = is_suffix
 
   def Insert(self, word):
     cur = self._root
+    if self._is_suffix:
+      word = word[::-1]
     for c in word:
       cur = cur._children[c]
     cur._is_terminal = True
 
-  def GetWordsWithPrefix(self, prefix):
+  def GetWordsWithAfix(self, afix):
     cur = self._root
-    for c in prefix:
+    for c in (afix if not self._is_suffix else reversed(afix)):
       cur = cur._children.get(c)
       if not cur:
         return []
-    return [prefix + w for w in self._GetAllWords(cur)]
+    if self._is_suffix:
+      return [w + afix for w in self._GetAllWords(cur)]
+    else:
+      return [afix + w for w in self._GetAllWords(cur)]
 
   def _GetAllWords(self, node):
     ret = []
@@ -32,12 +38,17 @@ class Trie(object):
     for c, child in node._children.iteritems():
       all_child_words = self._GetAllWords(child)
       for word in all_child_words:
-        ret.append(c + word)
+        if self._is_suffix:
+          ret.append(word + c)
+        else:
+          ret.append(c + word)
     return ret
 
   def Remove(self, word):
     path = [self._root]
     cur = self._root
+    if self._is_suffix:
+      word = word[::-1]
     for c in word:
       if c in cur._children:
         cur = cur._children[c]

@@ -4,17 +4,20 @@ import trie
 
 class TrieTest(unittest.TestCase):
 
+  def _AssertGetWordsWithAfix(self, trie, afix, expected):
+    self.assertEqual(sorted(trie.GetWordsWithAfix(afix)), sorted(expected))
+
   def testEmptyTrie(self):
     t = trie.Trie()
-    self.assertEqual(t.GetWordsWithPrefix(''), [])
-    self.assertEqual(t.GetWordsWithPrefix('foo'), [])
+    self._AssertGetWordsWithAfix(t, '', [])
+    self._AssertGetWordsWithAfix(t, 'foo', [])
 
   def testOneWords(self):
     t = trie.Trie()
     t.Insert('cross')
-    self.assertEqual(t.GetWordsWithPrefix('cr'), ['cross'])
-    self.assertEqual(t.GetWordsWithPrefix(''), ['cross'])
-    self.assertEqual(t.GetWordsWithPrefix('cross'), ['cross'])
+    self._AssertGetWordsWithAfix(t, 'cr', ['cross'])
+    self._AssertGetWordsWithAfix(t, '', ['cross'])
+    self._AssertGetWordsWithAfix(t, 'cross', ['cross'])
 
   def testManyWords(self):
     t = trie.Trie()
@@ -23,10 +26,10 @@ class TrieTest(unittest.TestCase):
     t.Insert('apple')
     t.Insert('cause')
 
-    self.assertEqual(sorted(t.GetWordsWithPrefix('cross')), sorted(['cross']))
-    self.assertEqual(sorted(t.GetWordsWithPrefix('cr')), sorted(['cross', 'crash']))
-    self.assertEqual(sorted(t.GetWordsWithPrefix('c')), sorted(['cross', 'crash', 'cause']))
-    self.assertEqual(sorted(t.GetWordsWithPrefix('')), sorted(['cross', 'crash', 'cause', 'apple']))
+    self._AssertGetWordsWithAfix(t, 'cross', ['cross'])
+    self._AssertGetWordsWithAfix(t, 'cr', ['cross', 'crash'])
+    self._AssertGetWordsWithAfix(t, 'c', ['cross', 'crash', 'cause'])
+    self._AssertGetWordsWithAfix(t, '', ['cross', 'crash', 'cause', 'apple'])
 
   def testRemove(self):
     t = trie.Trie()
@@ -37,9 +40,20 @@ class TrieTest(unittest.TestCase):
     with self.assertRaises(Exception):
       t.Remove('cruel')
     t.Remove('cross')
-    self.assertEqual(sorted(t.GetWordsWithPrefix('')), ['apple', 'crash'])
+    self._AssertGetWordsWithAfix(t, '', ['apple', 'crash'])
     t.Remove('crash')
-    self.assertEqual(t.GetWordsWithPrefix(''), ['apple'])
+    self._AssertGetWordsWithAfix(t, '', ['apple'])
+
+  def testSuffix(self):
+    t = trie.Trie(is_suffix=True)
+    t.Insert('crew')
+    t.Insert('drew')
+    self._AssertGetWordsWithAfix(t, 'ew', ['crew', 'drew'])
+    self._AssertGetWordsWithAfix(t, 'crew', ['crew'])
+
+    t.Remove('crew')
+    self._AssertGetWordsWithAfix(t, 'ew', ['drew'])
+
 
 
 if __name__ == '__main__':
