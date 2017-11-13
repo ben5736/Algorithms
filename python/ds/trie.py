@@ -5,6 +5,7 @@ class TrieNode(object):
   def __init__(self):
     self._children = collections.defaultdict(TrieNode)
     self._is_terminal = False
+    self._data = None
 
 class Trie(object):
 
@@ -12,13 +13,14 @@ class Trie(object):
     self._root = TrieNode()
     self._is_suffix = is_suffix
 
-  def Insert(self, word):
+  def Insert(self, word, data=None):
     cur = self._root
     if self._is_suffix:
       word = word[::-1]
     for c in word:
       cur = cur._children[c]
     cur._is_terminal = True
+    cur._data = data
 
   def GetWordsWithAfix(self, afix):
     cur = self._root
