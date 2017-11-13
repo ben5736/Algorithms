@@ -11,7 +11,7 @@ class Solution(object):
       s += 1
       e -= 1
     return True
-      
+
   def palindromePairs(self, words):
     """
     :type words: List[str]
@@ -20,14 +20,14 @@ class Solution(object):
     prefix_trie = trie.Trie()
     suffix_trie = trie.Trie(is_suffix=True)
     index_map = {}
-    
+
     for i, w in enumerate(words):
       prefix_trie.Insert(w)
       suffix_trie.Insert(w)
       index_map[w] = i
 
     ret = []
-      
+
     for i, w in enumerate(words):
       possible_suffix = suffix_trie.GetWordsWithAfix(w[::-1])
       for suffix in possible_suffix:

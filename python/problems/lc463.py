@@ -6,12 +6,12 @@ class Solution(object):
         """
         if not grid or not grid[0]:
             return 0
-        
+
         h = len(grid)
         w = len(grid[0])
-        
+
         ret = 0
-        
+
         for i in range(h):
             for j in range(w):
                 if grid[i][j]:

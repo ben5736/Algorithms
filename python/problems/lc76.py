@@ -9,7 +9,7 @@ class Solution(object):
         """
         if not s:
             return ''
-        
+
         all_chars = set(t)
         cur_chars = collections.defaultdict(int)
         start = 0
