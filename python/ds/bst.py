@@ -15,16 +15,19 @@ class BST(object):
       self._insert(val, self._root)
 
   def _insert(self, val, cur):
-    if val < cur._val:
-      if not cur._left:
-        cur._left = self.Node(val)
+    while True:
+      if val < cur._val:
+        if not cur._left:
+          cur._left = self.Node(val)
+          return
+        else:
+          cur = cur._left
       else:
-        self._insert(val, cur._left)
-    else:
-      if not cur._right:
-        cur._right = self.Node(val)
-      else:
-        self._insert(val, cur._right)
+        if not cur._right:
+          cur._right = self.Node(val)
+          return
+        else:
+          cur = cur._right
 
   def search(self, val):
     cur = self._root
