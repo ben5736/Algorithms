@@ -60,6 +60,6 @@ public class MinimulWindowSubstring {
     }
     
     public static void main(String[] args) {
-    	System.out.println(minWindow("bdab", "ab"));
+      System.out.println(minWindow("bdab", "ab"));
     }
 }
