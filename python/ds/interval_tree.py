@@ -52,7 +52,7 @@ class IntervalTree(object):
     return True      
 
   def __str__(self):
-    return '\n'.join(self._print(self._root))
+    return '\n' + '\n'.join(self._print(self._root)) + '\n'
 
   def _print(self, cur):
     if not cur:
