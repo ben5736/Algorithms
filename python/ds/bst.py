@@ -87,4 +87,12 @@ class BST(object):
     if not cur:
       return ''
     else:
-      return '[%s] %d [%s]' % (self._print(cur._left), cur._val, self._print(cur._right))
+      left = self._print(cur._left)
+      right = self._print(cur._right)
+      result = ''
+      if left:
+        result += '[%s] ' % left
+      result += str(cur._val)
+      if right:
+        result += ' [%s]' % right
+      return result
