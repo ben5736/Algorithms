@@ -46,6 +46,72 @@ class IntervalTree(object):
       else:
         cur = cur._right
 
+  def _searchExact(self, low, high):
+    path = []
+    cur = self._root
+    while cur and (cur._low != low or cur._high != high):
+      path.append(cur)
+      if low < cur._low:
+        cur = cur._left
+      else:
+        cur = cur._right
+    if cur:
+      path.append(cur)
+      return path
+    return None
+
+  def delete(self, low, high):
+    path = self._searchExact(low, high)
+    if not path:
+      raise Exception("interval not found")
+    if len(path) == 1:
+      parent, target = None, path[-1]
+    else:
+      parent, target = path[-2], path[-1]
+
+    if self._isLeaf(target):
+      self._relink(parent, target, None)
+      path.pop()
+    elif not target._left:
+      self._relink(parent, target, target._right)
+      path.pop()
+    elif not target._right:
+      self._relink(parent, target, target._left)
+      path.pop()
+    elif not target._left._right:
+      path[-1] = target._left
+      target._left._right = target._right
+      self._relink(parent, target, target._left)
+    else:
+      parent = target._left
+      path.append(parent)
+      while parent._right._right:
+        parent = parent._right
+        path.append(parent)
+      target._low = parent._right._low  
+      target._high = parent._right._high  
+      parent._right = None
+
+    for node in reversed(path):
+      node._maximum = node._high
+      if node._left and node._left._maximum > node._maximum:
+        node._maximum = node._left._maximum
+      if node._right and node._right._maximum > node._maximum:
+        node._maximum = node._right._maximum
+
+  def _relink(self, parent, target, new_target):
+    if not parent:
+      self._root = new_target
+    elif target == parent._left:
+      parent._left = new_target
+    elif target == parent._right:
+      parent._right = new_target
+    else:
+      raise Exception("Cannot unlink when target is not a child of parent.")
+
+  def _isLeaf(self, node):
+    return not node._left and not node._right
+
   def _intersect(self, l1, h1, l2, h2):
     if h1 < l2 or h2 < l1:
       return False
