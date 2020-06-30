@@ -98,6 +98,19 @@ class CubeTest(unittest.TestCase):
 1 2
 """)
 
+  def testSolve1(self):
+    c = cube.Cube()
+    c.move('right_clockwise')
+    c.move('right_clockwise')
+    c.move('right_clockwise')
+    self.assertEqual(c.solve(), ['right_clockwise'])
+
+  def testSolve2(self):
+    c = cube.Cube()
+    c.move('right_clockwise')
+    c.move('right_clockwise')
+    self.assertEqual(c.solve(), ['right_clockwise', 'right_clockwise'])
+
 
 if __name__ == '__main__':
   unittest.main()

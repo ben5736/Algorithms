@@ -76,3 +76,34 @@ class Cube(object):
       self._right[0][1], self._right[1][1] = self._bottom[1][1], self._bottom[1][0]
       self._bottom[1][0], self._bottom[1][1] = self._left[0][0], self._left[1][0]
       self._left[0][0], self._left[1][0] = tmp2, tmp1
+
+  def unmove(self, moveStr):
+    for i in range(3):
+      self.move(moveStr)
+
+  def solve(self):
+    seen = set()
+    stack = []
+
+    while not self.solved():
+      cur_str = str(self)
+
+      if cur_str not in seen:
+        seen.add(cur_str)
+        next_move = 'right_clockwise'
+        stack.append(next_move)
+        self.move(next_move)
+      else:
+        last_move = stack.pop()
+        self.unmove(last_move)
+        if last_move == 'right_clockwise':
+          next_move = 'bottom_clockwise'
+        elif last_move == 'bottom_clockwise':
+          next_move = 'back_clockwise'
+        else:
+          next_move = None
+
+        if next_move:
+          stack.append(next_move)
+          self.move(next_move)
+    return stack
