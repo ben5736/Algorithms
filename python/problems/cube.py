@@ -1,8 +1,14 @@
+import collections
+
 class Cube(object):
 
   def __init__(self, faces=None):
     def __makeFace(val):
       return [[val, val], [val, val]]
+
+    def __copyFace(face):
+      return [face[0][:], face[1][:]]
+
     if not faces:
       self._front = __makeFace(0)
       self._top = __makeFace(1)
@@ -11,7 +17,15 @@ class Cube(object):
       self._left = __makeFace(4)
       self._back = __makeFace(5)
     else:
-      self._front, self._top, self._right, self._bottom, self._left, self._back = faces
+      self._front = __copyFace(faces[0])
+      self._top = __copyFace(faces[1])
+      self._right = __copyFace(faces[2])
+      self._bottom = __copyFace(faces[3])
+      self._left = __copyFace(faces[4])
+      self._back = __copyFace(faces[5])
+
+  def copy(self):
+    return Cube(faces=(self._front, self._top, self._right, self._bottom, self._left, self._back))
 
   def _faceSolved(self, face):
     first = face[0][0]
@@ -81,7 +95,7 @@ class Cube(object):
     for i in range(3):
       self.move(moveStr)
 
-  def solve(self):
+  def solveDFS(self):
     seen = set()
     stack = []
 
@@ -107,3 +121,19 @@ class Cube(object):
           stack.append(next_move)
           self.move(next_move)
     return stack
+
+  def solveBFS(self):
+    seen = set()
+    queue = collections.deque()
+    cur = self
+    moves = []
+
+    while not cur.solved():
+      seen.add(str(cur))
+      for move in cur.supportedMoves():
+        cur.move(move)
+        if str(cur) not in seen:
+          queue.append((cur.copy(), moves + [move]))
+        cur.unmove(move)
+      cur, moves = queue.popleft()
+    return moves
