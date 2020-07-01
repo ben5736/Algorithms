@@ -67,6 +67,13 @@ class Cube(object):
     face[1][1] = face[0][1]
     face[0][1] = tmp
 
+  def _rotateFaceCounterclockwise(self, face):
+    tmp = face[0][0]
+    face[0][0] = face[0][1]
+    face[0][1] = face[1][1]
+    face[1][1] = face[1][0]
+    face[1][0] = tmp
+
   def move(self, moveStr):
     if moveStr not in self.supportedMoves():
       raise Exception('Unsupported move.')
@@ -92,18 +99,36 @@ class Cube(object):
       self._bottom[1][0], self._bottom[1][1] = self._left[0][0], self._left[1][0]
       self._left[0][0], self._left[1][0] = tmp2, tmp1
     elif moveStr == 'right_counterclockwise':
-      self.unmove('right_clockwise')
+      self._rotateFaceCounterclockwise(self._right)
+      tmp1, tmp2 = self._front[0][1], self._front[1][1]
+      self._front[0][1], self._front[1][1] = self._top[0][1], self._top[1][1]
+      self._top[0][1], self._top[1][1] = self._back[0][1], self._back[1][1]
+      self._back[0][1], self._back[1][1] = self._bottom[0][1], self._bottom[1][1]
+      self._bottom[0][1], self._bottom[1][1] = tmp1, tmp2
     elif moveStr == 'bottom_counterclockwise':
-      self.unmove('bottom_clockwise')
+      self._rotateFaceCounterclockwise(self._bottom)
+      tmp1, tmp2 = self._front[1][0], self._front[1][1]
+      self._front[1][0], self._front[1][1] = self._right[1][0], self._right[1][1]
+      self._right[1][1], self._right[1][0] = self._back[0][0], self._back[0][1]
+      self._back[0][1], self._back[0][0] = self._left[1][0], self._left[1][1]
+      self._left[1][0], self._left[1][1] = tmp1, tmp2
     else:
-      self.unmove('back_clockwise')
+      self._rotateFaceCounterclockwise(self._back)
+      tmp1, tmp2 = self._top[0][0], self._top[0][1]
+      self._top[0][0], self._top[0][1] = self._left[1][0], self._left[0][0]
+      self._left[0][0], self._left[1][0] = self._bottom[1][0], self._bottom[1][1]
+      self._bottom[1][1], self._bottom[1][0] = self._right[0][1], self._right[1][1]
+      self._right[0][1], self._right[1][1] = tmp1, tmp2
 
   def unmove(self, moveStr):
     if moveStr not in self.supportedMoves():
       raise Exception('Unsupported move.')
-    if 'counter' not in moveStr:  
-      for i in range(3):
-        self.move(moveStr)
+    if moveStr == 'right_clockwise':
+      self.move('right_counterclockwise')
+    elif moveStr == 'bottom_clockwise':
+      self.move('bottom_counterclockwise')
+    elif moveStr == 'back_clockwise':
+      self.move('back_counterclockwise')
     elif moveStr == 'right_counterclockwise':
       self.move('right_clockwise')
     elif moveStr == 'bottom_counterclockwise':
@@ -143,13 +168,35 @@ class Cube(object):
     queue = collections.deque()
     cur = self
     moves = []
+    maxmoves = 0
 
     while not cur.solved():
-      seen.add(str(cur))
-      for move in cur.supportedMoves():
-        cur.move(move)
-        if str(cur) not in seen:
-          queue.append((cur.copy(), moves + [move]))
-        cur.unmove(move)
+      if len(moves) > maxmoves:
+        maxmoves = len(moves)
+        print maxmoves
+      if len(seen) % 10000 == 0:
+        print '%d seen' % len(seen)
+      cur_str = str(cur)
+      if cur_str not in seen:
+        seen.add(str(cur))
+        for move in cur.supportedMoves():
+          cur.move(move)
+          if str(cur) not in seen:
+            queue.append((cur.copy(), moves + [move]))
+          cur.unmove(move)
       cur, moves = queue.popleft()
     return moves
+
+
+def main():
+  front = [[0, 3], [0, 3]]
+  top = [[2, 4], [1, 0]]
+  right = [[2, 1], [2, 5]]
+  bottom = [[3, 5], [5, 3]]
+  left = [[0, 4], [1, 4]]
+  back = [[2, 4], [1, 5]]
+  c = Cube((front, top, right, bottom, left, back))
+  print c.solveBFS()
+
+if __name__ == '__main__':
+  main()
