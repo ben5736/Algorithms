@@ -57,7 +57,8 @@ class Cube(object):
       ])
 
   def supportedMoves(self):
-    return ['right_clockwise', 'bottom_clockwise', 'back_clockwise']
+    return ['right_clockwise', 'bottom_clockwise', 'back_clockwise',
+            'right_counterclockwise', 'bottom_counterclockwise', 'back_counterclockwise']
 
   def _rotateFaceClockwise(self, face):
     tmp = face[0][0]
@@ -80,20 +81,35 @@ class Cube(object):
       self._rotateFaceClockwise(self._bottom)
       tmp1, tmp2 = self._front[1][0], self._front[1][1]
       self._front[1][0], self._front[1][1] = self._left[1][0], self._left[1][1]
-      self._left[1][0], self._left[1][1] = self._back[0][0], self._back[0][1]
+      self._left[1][0], self._left[1][1] = self._back[0][1], self._back[0][0]
       self._back[0][0], self._back[0][1] = self._right[1][1], self._right[1][0]
       self._right[1][0], self._right[1][1] = tmp1, tmp2
-    else:
+    elif moveStr == 'back_clockwise':
       self._rotateFaceClockwise(self._back)
       tmp1, tmp2 = self._top[0][0], self._top[0][1]
       self._top[0][0], self._top[0][1] = self._right[0][1], self._right[1][1]
       self._right[0][1], self._right[1][1] = self._bottom[1][1], self._bottom[1][0]
       self._bottom[1][0], self._bottom[1][1] = self._left[0][0], self._left[1][0]
       self._left[0][0], self._left[1][0] = tmp2, tmp1
+    elif moveStr == 'right_counterclockwise':
+      self.unmove('right_clockwise')
+    elif moveStr == 'bottom_counterclockwise':
+      self.unmove('bottom_clockwise')
+    else:
+      self.unmove('back_clockwise')
 
   def unmove(self, moveStr):
-    for i in range(3):
-      self.move(moveStr)
+    if moveStr not in self.supportedMoves():
+      raise Exception('Unsupported move.')
+    if 'counter' not in moveStr:  
+      for i in range(3):
+        self.move(moveStr)
+    elif moveStr == 'right_counterclockwise':
+      self.move('right_clockwise')
+    elif moveStr == 'bottom_counterclockwise':
+      self.move('bottom_clockwise')
+    else:
+      self.move('back_clockwise') 
 
   def solveDFS(self):
     seen = set()
