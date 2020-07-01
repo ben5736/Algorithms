@@ -164,28 +164,33 @@ class Cube(object):
     return stack
 
   def solveBFS(self):
+    class Node(object):
+      def __init__(self, val, next_node):
+        self.val = val
+        self.next = next_node
+
     seen = set()
     queue = collections.deque()
     cur = self
-    moves = []
-    maxmoves = 0
+    last_move = None
 
     while not cur.solved():
-      if len(moves) > maxmoves:
-        maxmoves = len(moves)
-        print maxmoves
       if len(seen) % 10000 == 0:
         print '%d seen' % len(seen)
       cur_str = str(cur)
       if cur_str not in seen:
-        seen.add(str(cur))
+        seen.add(cur_str)
         for move in cur.supportedMoves():
           cur.move(move)
           if str(cur) not in seen:
-            queue.append((cur.copy(), moves + [move]))
+            queue.append((cur.copy(), Node(move, last_move)))
           cur.unmove(move)
-      cur, moves = queue.popleft()
-    return moves
+      cur, last_move = queue.popleft()
+    results = []
+    while last_move:
+      results.append(last_move.val)
+      last_move = last_move.next
+    return results[::-1]
 
 
 def main():
