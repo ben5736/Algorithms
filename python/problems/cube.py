@@ -173,19 +173,22 @@ class Cube(object):
     queue = collections.deque()
     cur = self
     last_move = None
+    processed = 0
 
     while not cur.solved():
-      if len(seen) % 10000 == 0:
-        print '%d seen' % len(seen)
+      processed += 1
+      if processed % 10000 == 0:
+        print '%d processed' % processed
       cur_str = str(cur)
-      if cur_str not in seen:
-        seen.add(cur_str)
-        for move in cur.supportedMoves():
-          cur.move(move)
-          if str(cur) not in seen:
-            queue.append((cur.copy(), Node(move, last_move)))
-          cur.unmove(move)
+      for move in cur.supportedMoves():
+        cur.move(move)
+        cur_str = str(cur)
+        if cur_str not in seen:
+          seen.add(cur_str)
+          queue.append((cur.copy(), Node(move, last_move)))
+        cur.unmove(move)
       cur, last_move = queue.popleft()
+
     results = []
     while last_move:
       results.append(last_move.val)
