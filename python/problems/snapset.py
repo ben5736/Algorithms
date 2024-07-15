@@ -1,53 +1,4 @@
 import bisect
-
-# class SnapshotSet(object):
-
-#   def __init__(self):
-#     self.main = set()
-#     self.added = set()
-#     self.removed = set()
-#     self.pending_iter = False
-
-#   def add(self, value):
-#     if not self.pending_iter:
-#       return self.main.add(value)
-#     elif self.pending_iter.has_next():
-#       self.added.add(value)
-#       self.removed.remove(value)
-#     else:
-#       self.merge()
-#       self.main.add(value)
-
-#   def remove(self, value):
-#     if not self.pending_iter:
-#       return self.main.remove(value)
-#     elif self.pending_iter.has_next():
-#       self.added.remove(value)
-#       self.removed.added(value)
-#     else:
-#       self.merge()
-#       self.main.remove(value)
-
-#   def contains(self, value):
-#     if not self.pending_iter:
-#       return self.main.contains(value)
-#     elif self.pending_iter.has_next():
-#       return self.added.contains(value) or (self.main.contains(value) and not self.removed.contains(value))
-#     else:
-#       self.merge()
-#       return self.main.contains(value)
-
-#   def iterator(self):
-#     self.merge()
-#     self.pending_iter = iter(self.main)
-#     return self.pending_iter
-
-#   def merge():
-#     for v in self.added:
-#       self.main.add(v)
-#     for v in self.removed:
-#       self.main.remove(v)
-
 from collections import defaultdict
 
 class NewSnapshotSet(object):
@@ -115,14 +66,6 @@ class NewSnapshotSet(object):
           if change:
             self.next_pos += 1
             return value
-        # for i in range(len(changes) - 1, -1, -1):
-        #   snapshot, change = changes[i]
-        #   if snapshot <= self.snapshot:
-        #     if change:
-        #       self.next_pos += 1
-        #       return value
-        #     else:
-        #       break
         self.next_pos += 1
       raise StopIteration
 
